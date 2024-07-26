@@ -45,14 +45,12 @@ jobs:
     - # 构建 amd64 镜像
       name: build amd64
       run: |
-        #docker build --no-cache --platform "linux/amd64" -f Dockerfile -t ghcr.io/uilgnod-liamtoh/alpine-miniforge-jupyter:amd64 .
-        docker buildx build --platform "linux/amd64" -t ghcr.io/uilgnod-liamtoh/alpine-miniforge-jupyter:latest --push -f Dockerfile .
+        docker buildx build --platform linux/amd64 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
         
     - # 构建 arm64 镜像
       name: build arm64
       run: |
-        # docker build --no-cache --platform "linux/arm64/v8" -f Dockerfile -t ghcr.io/uilgnod-liamtoh/alpine-miniforge-jupyter:arm64 .
-        docker buildx build --platform "linux/arm64/v8" -t ghcr.io/uilgnod-liamtoh/alpine-miniforge-jupyter:latest --push -f Dockerfile .
+        docker buildx build --platform linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
 
     # 打印镜像信息
     - name: Inspect image
