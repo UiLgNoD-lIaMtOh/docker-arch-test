@@ -9,7 +9,7 @@
 </a>
 
 ## ghrc.io
-镜像仓库链接：[https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/docker-arch-test](https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/docker-arch-test)
+镜像仓库链接：[https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/alpine-test](https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/alpine-test)
 
 ## 通知 docker 使用 qemu 支持多架构编译
     docker run --platform linux/amd64 --privileged --rm tonistiigi/binfmt:master --install all
