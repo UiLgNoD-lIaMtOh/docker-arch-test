@@ -1,4 +1,4 @@
-# 使用 docker manifest 命令来创建和推送 manifest list 测试多平台镜像推送一个tag  
+# 使用 docker buildx 命令来创建和推送 manifest list 测试多平台镜像推送一个tag  
 ![Watchers](https://img.shields.io/github/watchers/UiLgNoD-lIaMtOh/docker-arch-test) ![Stars](https://img.shields.io/github/stars/UiLgNoD-lIaMtOh/docker-arch-test) ![Forks](https://img.shields.io/github/forks/UiLgNoD-lIaMtOh/docker-arch-test) ![Vistors](https://visitor-badge.laobi.icu/badge?page_id=UiLgNoD-lIaMtOh.docker-arch-test) ![LICENSE](https://img.shields.io/badge/license-CC%20BY--SA%204.0-green.svg)
 <a href="https://star-history.com/#UiLgNoD-lIaMtOh/docker-arch-test&Date">
   <picture>
@@ -65,12 +65,6 @@
     
 # 构建并推送多平台的镜像
     docker buildx build --platform linux/amd64,linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push .
-    # 或分开构建
-    ## amd64
-    docker buildx build --platform linux/amd64 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
-    ## arm64
-    docker buildx build --platform linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
-
 
 ## arm64 平台架构打印测试
     docker run --rm --platform linux/arm64 ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
