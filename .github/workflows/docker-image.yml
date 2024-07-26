@@ -14,6 +14,7 @@ on:
 # 自定义环境变量，有风险危险调用，有什么私密变量请不要定义在这里
 env:
   REGISTRY: ghcr.io
+  IMAGE: ${{ github.actor }}/docker-arch-test
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,19 +42,54 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
-    - # 构建 amd64 镜像
-      name: build amd64
+    # 缓存 Docker 镜像以加速构建
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-     
+    # 根据输入自动生成 tag 和 label 等数据
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE }}
+        tags: |
+          # set latest tag for master branch
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+    # 构建并上传镜像到仓库
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      id: docker-amd64-custom-ubuntu-topfreeproxies
+      with:
+        provenance: false
+        context: .
+        file: ./Dockerfile
+        builder: ${{ steps.buildx.outputs.name }}
+        platforms: linux/amd64,linux/arm64/v8
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+    - # Temp fix 修复 docker 缓存越来越大的问题
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      name: Move cache
       run: |
-        docker buildx build --platform linux/amd64 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
-        
-    - # 构建 arm64 镜像
-      name: build arm64
-      run: |
-        docker buildx build --platform linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
-
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache 
     # 打印镜像信息
     - name: Inspect image
       run: |
         docker buildx imagetools inspect \
-        ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
+        ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE }} | tr A-Z a-z):${{ steps.meta.outputs.version }}
+    # 运行docker镜像测试
+    - name: Run Docker Image
+      run: |
+        docker run --platform linux/amd64 \
+        ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE }} | tr A-Z a-z):${{ steps.meta.outputs.version }}
+        docker run --platform linux/arm64/v8 \
+        ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE }} | tr A-Z a-z):${{ steps.meta.outputs.version }}
