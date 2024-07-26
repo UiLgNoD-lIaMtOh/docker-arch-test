@@ -8,7 +8,7 @@
   </picture>
 </a>
 
-## ghrc.io
+## ghcr.io
 镜像仓库链接：[https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/alpine-test](https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/alpine-test)
 
 ## 描述
