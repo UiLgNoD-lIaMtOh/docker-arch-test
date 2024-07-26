@@ -1,10 +1,9 @@
-version: "3.9"
 services:
   arch-app:
     build:
       context: .
     platform: linux/arm64/v8
-    image: UiLgNoD-lIaMtOh/docker-arch-test:arm64
+    image: ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
     command:
       - "/bin/ash"
       - "/app/arch-test.sh"
