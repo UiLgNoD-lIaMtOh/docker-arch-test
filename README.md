@@ -1,4 +1,4 @@
-# 使用 docker buildx 命令来创建和推送 manifest list 测试多平台镜像推送一个tag  
+# 使用 docker buildx 命令来创建和推送 list 测试多平台镜像推送一个tag  
 ![Watchers](https://img.shields.io/github/watchers/UiLgNoD-lIaMtOh/docker-arch-test) ![Stars](https://img.shields.io/github/stars/UiLgNoD-lIaMtOh/docker-arch-test) ![Forks](https://img.shields.io/github/forks/UiLgNoD-lIaMtOh/docker-arch-test) ![Vistors](https://visitor-badge.laobi.icu/badge?page_id=UiLgNoD-lIaMtOh.docker-arch-test) ![LICENSE](https://img.shields.io/badge/license-CC%20BY--SA%204.0-green.svg)
 <a href="https://star-history.com/#UiLgNoD-lIaMtOh/docker-arch-test&Date">
   <picture>
@@ -8,7 +8,8 @@
   </picture>
 </a>
 
-## <a href="https://hub.docker.com/r/UiLgNoD-lIaMtOh/docker-arch-test" title="docker制作好的测试镜像">docker制作好的测试镜像</a>
+## ghrc.io
+镜像仓库链接：[https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/docker-arch-test](https://github.com/UiLgNoD-lIaMtOh/docker-arch-test/pkgs/container/docker-arch-test)
 
 ## 通知 docker 使用 qemu 支持多架构编译
     docker run --platform linux/amd64 --privileged --rm tonistiigi/binfmt:master --install all
