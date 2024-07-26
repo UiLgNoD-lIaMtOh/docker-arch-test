@@ -10,97 +10,76 @@
 
 ## <a href="https://hub.docker.com/r/UiLgNoD-lIaMtOh/docker-arch-test" title="docker制作好的测试镜像">docker制作好的测试镜像</a>
 
-## debian12 安装 qemu
-    sudo eatmydata aptitude --without-recommends -o APT::Get::Install-Recommends="true" -o APT::Get::Install-Suggests="true" install -y qemu-kvm \
-                                                                                                                                qemu-user-static \
-                                                                                                                                binfmt-support \
-                                                                                                                                qemu-system \
-                                                                                                                                qemu-utils
 ## 通知 docker 使用 qemu 支持多架构编译
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    docker run --platform linux/amd64 --privileged --rm tonistiigi/binfmt:master --install all
+
+# 展示可支持的模拟架构
+    docker run --privileged --rm tonistiigi/binfmt:master
+
+# 安装并启用 buildx 插件
+    docker buildx install
+
+# 创建并使用一个新的构建器实例
+    docker buildx create --use
+
+## docker-arch-test 测试材料
+    # docker-arch-test 目录结构
+    .
+    ├── arch-test.sh
+    ├── docker-compose-amd64.yml
+    ├── docker-compose-arm64.yml
+    └── Dockerfile
 
 ## arch-test.sh 测试材料脚本内容
     #!/bin/ash
     uname -m
     uname -s
 
-## docker-arch-arm64-test 测试材料
-    # docker-arch-arm64-test 目录结构
-    docker-arch-arm64-test/
-    ├── arch-test.sh
-    ├── docker-compose.yml
-    └── Dockerfile
-
-    # docker-compose.yml 内容
-    version: "3.9"
+## docker-compose-amd64.yml 内容
     services:
-    arch-app:
+      arch-app:
         build:
-        context: .
-        platform: linux/arm64/v8
-        image: UiLgNoD-lIaMtOh/docker-arch-test:arm64
-        command:
-        - "/bin/ash"
-        - "/app/arch-test.sh"
-
-    # Dockerfile 内容
-    FROM --platform=linux/arm64/v8 alpine:latest
-    WORKDIR /app
-    COPY arch-test.sh /app
-    CMD ["/bin/ash", "/app/arch-test.sh"]
-
-## docker-arch-amd64-test 测试材料
-    # docker-arch-amd64-test 目录结构
-    docker-arch-amd64-test/
-    ├── arch-test.sh
-    ├── docker-compose.yml
-    └── Dockerfile
-
-    # docker-compose.yml 内容
-    version: "3.9"
-    services:
-    arch-app:
-        build:
-        context: .
+          context: .
         platform: linux/amd64
-        image: UiLgNoD-lIaMtOh/docker-arch-test:amd64
+        image: ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
         command:
-        - "/bin/ash"
-        - "/app/arch-test.sh"
+          - "/bin/ash"
+          - "/app/arch-test.sh"
 
-    # Dockerfile 内容
-    FROM --platform=linux/amd64 alpine:latest
+## docker-compose-arm64.yml 内容
+    services:
+      arch-app:
+        build:
+          context: .
+        platform: linux/arm64/v8
+        image: ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
+        command:
+          - "/bin/ash"
+          - "/app/arch-test.sh"
+          
+## Dockerfile 内容
+    FROM alpine:latest
+    ADD arch-test.sh /app
     WORKDIR /app
-    COPY arch-test.sh /app
     CMD ["/bin/ash", "/app/arch-test.sh"]
+    
+# 构建并推送多平台的镜像
+    docker buildx build --platform linux/amd64,linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push .
+    # 或分开构建
+    ## amd64
+    docker buildx build --platform linux/amd64 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
+    ## arm64
+    docker buildx build --platform linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push -f Dockerfile .
 
-## arm64 平台架构编译推送
-    cd docker-arch-arm64-test
-    docker build -f Dockerfile -t UiLgNoD-lIaMtOh/docker-arch-test:arm64 .
-    # docker-compose build
-    cd -
-
-## amd64 平台架构编译推送
-    cd docker-arch-amd64-test
-    docker build -f Dockerfile -t UiLgNoD-lIaMtOh/docker-arch-test:amd64 .
-    # docker-compose build
-    cd -
-
-## docker manifest 创建列表 tag 并推送
-    docker manifest create UiLgNoD-lIaMtOh/docker-arch-test:latest UiLgNoD-lIaMtOh/docker-arch-test:arm64 UiLgNoD-lIaMtOh/docker-arch-test:amd64
-    docker manifest push UiLgNoD-lIaMtOh/docker-arch-test:latest
-
-## 清理本地镜像
-    docker rmi UiLgNoD-lIaMtOh/docker-arch-test:latest UiLgNoD-lIaMtOh/docker-arch-test:arm64 UiLgNoD-lIaMtOh/docker-arch-test:amd64
 
 ## arm64 平台架构打印测试
-    docker run --rm --platform linux/arm64 UiLgNoD-lIaMtOh/docker-arch-test:latest
+    docker run --rm --platform linux/arm64 ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
     # 打印效果
         aarch64
         Linux
 
 ## amd64 平台架构打印测试
-    docker run --rm --platform linux/amd64 UiLgNoD-lIaMtOh/docker-arch-test:latest
+    docker run --rm --platform linux/amd64 ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
     # 打印效果
         x86_64
         Linux
