@@ -60,9 +60,9 @@
           
 ## Dockerfile 内容
     FROM alpine:latest
-    ADD arch-test.sh /app
+    ADD arch-test.sh /app/
     WORKDIR /app
-    CMD ["/bin/ash", "/app/arch-test.sh"]
+    CMD ["/bin/ash", "arch-test.sh"]
     
 # 构建并推送多平台的镜像
     docker buildx build --platform linux/amd64,linux/arm64/v8 -t ghcr.io/uilgnod-liamtoh/docker-arch-test:latest --push .
