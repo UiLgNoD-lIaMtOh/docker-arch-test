@@ -56,4 +56,4 @@ jobs:
     - name: Inspect image
       run: |
         docker buildx imagetools inspect \
-        ghcr.io/uilgnod-liamtoh/alpine-miniforge-jupyter:latest
+        ghcr.io/uilgnod-liamtoh/docker-arch-test:latest
